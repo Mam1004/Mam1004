@@ -1,0 +1,65 @@
+Sub Copy()
+Application.Calculation = xlCalculationManual
+Application.EnableEvents = False
+Application.ScreenUpdating = False
+Application.EnableCancelKey = False
+Dim lastRow As Long
+Dim lastRow1 As Long
+Dim lastRow2 As Long
+    
+'   Find last row in column A
+lastRow = Sheets("Mnth to Mnth").Cells(Rows.Count, "A").End(xlUp).Row
+lastRow1 = Sheets("Pending Aged").Cells(Rows.Count, "C").End(xlUp).Row
+lastRow2 = Sheets("Pending Aged Prev Mth").Cells(Rows.Count, "C").End(xlUp).Row
+    Worksheets("Mnth to Mnth").Activate
+    Worksheets("Mnth to Mnth").Range("D2:E" & lastRow).Copy
+    Worksheets("Mnth to Mnth").Range("B2").PasteSpecial Paste:=xlPasteValues
+    Worksheets("Pending Aged Prev Mth").Activate
+    Worksheets("Pending Aged Prev Mth").Range("A:H").ClearContents
+    Worksheets("Pending Aged").Activate
+    Worksheets("Pending Aged").Range("PendingAged[[#Headers],[CLAIMID]:[CLM REP]]").Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Selection.Copy
+    Sheets("Pending Aged Prev Mth").Activate
+    Range("A1").PasteSpecial Paste:=xlPasteValues
+    
+    Worksheets("Pending Aged").Activate
+    Worksheets("Pending Aged").Range("I2:I" & lastRow1).FormulaR1C1 = _
+        "=IF(IFERROR(VLOOKUP(RC[-8],'Pending Aged Prev Mth'!C[-8],1,FALSE),0)>0,TRUE,FALSE)"
+    Worksheets("Pending Aged").Range("J2:J" & lastRow1).FormulaR1C1 = "=YEAR(RC[-4])"
+    Worksheets("Pending Aged").Range("K2:K" & lastRow1).FormulaR1C1 = "=ROUNDUP(MONTH(RC[-5])/3,0)"
+    Worksheets("Pending Aged").Range("L2:L" & lastRow1).FormulaR1C1 = _
+        "=VLOOKUP(RC[-11],'Pending Aged Prev Mth'!C[-11]:C[-5],7,FALSE)"
+    Worksheets("Pending Aged").Range("M2:M" & lastRow1).FormulaR1C1 = "=RC[-7]=RC[-1]"
+    Worksheets("Pending Aged").Range("N2:N" & lastRow1).FormulaR1C1 = _
+        "=IF(AND(RC[-9]<TODAY(),RC[-9]>(TODAY()-180)),""0-6 Months"",IF(AND(RC[-9]<=(TODAY()-180),RC[-9]>=(TODAY()-365)),""7-12 Months"",""Grtr 1 Year""))"
+    
+    Worksheets("Pending Aged Prev Mth").Activate
+    Worksheets("Pending Aged Prev Mth").Range("I2:I" & lastRow2).FormulaR1C1 = _
+        "=IFERROR(IF(VLOOKUP(RC[-8],'Pending Aged'!C[-8],1,FALSE)>0,TRUE,FALSE),FALSE)"
+    Worksheets("Pending Aged Prev Mth").Range("J2:J" & lastRow2).FormulaR1C1 = "=YEAR(RC[-4])"
+    Worksheets("Pending Aged Prev Mth").Range("K2:K" & lastRow2).FormulaR1C1 = "=ROUNDUP(MONTH(RC[-5])/3,0)"
+
+For Each objConnection In ActiveWorkbook.Connections
+        'Get current background-refresh value
+        bBackground = objConnection.OLEDBConnection.BackgroundQuery
+
+        'Temporarily disable background-refresh
+        objConnection.OLEDBConnection.BackgroundQuery = False
+
+        'Refresh this connection
+        objConnection.Refresh
+
+        'Set background-refresh value back to original value
+        objConnection.OLEDBConnection.BackgroundQuery = bBackground
+Next
+Application.Calculation = xlCalculationAutomatic
+Application.EnableEvents = True
+Application.ScreenUpdating = True
+
+'Needed to refresh Pivot Tables
+ActiveWorkbook.RefreshAll
+
+End Sub
+
+
