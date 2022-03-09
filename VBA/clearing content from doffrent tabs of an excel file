@@ -1,0 +1,15 @@
+Sub DeleteAllButThree()
+  
+  Dim s
+
+  Application.DisplayAlerts = False
+  For Each s In Sheets
+     If s.Name <> "Summary" And s.Name <> "0222218 Start" And _
+        s.Name <> "0222225 Start" Then
+            s.UsedRange.Offset(1).ClearContents
+     End If
+  Next
+  Application.DisplayAlerts = True
+
+End Sub
+
