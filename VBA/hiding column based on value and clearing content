@@ -1,0 +1,59 @@
+Sub Unprotect_Workbook()
+ActiveWorkbook.Unprotect Password:="locked"
+End Sub
+
+Sub Hide()
+With ActiveSheet
+Range("V8").Formula = "=Sum(K8:S8)"
+Range("V8").AutoFill Destination:=Range("V8:V200")
+On Error Resume Next
+For Each Cell In Range("V:V")
+    If Cell.Value = "0" Then
+    Cell.EntireRow.Hidden = True
+End If
+Next
+Columns("V:V").EntireColumn.Hidden = True
+Columns("A:A").EntireColumn.Hidden = True
+For Each Sht In ActiveWorkbook.Sheets
+    If (Sht.Name <> "All Inventory") _
+    And (Sht.Name <> "Utility") Then Sht.Protect Password:="locked"
+Next
+Sheets("All Inventory").Visible = False
+ActiveWorkbook.Protect Password:="locked"
+End With
+Range("B1").Select
+End Sub
+
+Sub Unhide()
+ActiveWorkbook.Unprotect Password:="locked"
+For Each Sht In ActiveWorkbook.Sheets
+    Sht.Unprotect Password:="locked"
+Next
+Sheets("All Inventory").Visible = True
+ActiveSheet.Unprotect Password:="locked"
+Rows.EntireRow.Hidden = False
+Columns("V:V").EntireColumn.Hidden = False
+Columns("A:A").EntireColumn.Hidden = False
+Range("B8").Select
+End Sub
+
+Sub Year_End_Delete()
+Application.EnableEvents = True
+ActiveWorkbook.Unprotect Password:="locked"
+    Dim lastrow As Long
+    Dim WS As Worksheet
+lastrow = Range("A8").End(xlDown).Row
+
+         ' Begin the loop.
+         For Each WS In Sheets
+         If WS.Name <> "All Inventory" Then
+         WS.Activate
+         ActiveSheet.Unprotect Password:="locked"
+        Rows.EntireRow.Hidden = False
+        Range("A8:V" & lastrow).ClearContents
+        Range("A8:V" & lastrow).ClearFormats
+        End If
+         Next WS
+
+End Sub
+
