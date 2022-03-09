@@ -1,0 +1,23 @@
+Sub ProtectAll()
+Dim sh As Worksheet
+Dim myPassword As String
+ myPassword = "locked"
+
+For Each sh In ActiveWorkbook.Worksheets
+ActiveSheet.Protect myPassword
+    ActiveSheet.EnableSelection = xlUnlockedCells
+    ActiveSheet.Protect AllowFiltering:=True
+Next sh
+
+End Sub
+
+Sub UnprotectAll()
+Dim sh As Worksheet
+Dim myPassword As String
+ myPassword = "locked"
+
+For Each sh In ActiveWorkbook.Worksheets
+ sh.Unprotect Password:=myPassword
+Next sh
+
+End Sub
