@@ -1,0 +1,118 @@
+Sub Macro1_Change2Formula()
+'
+' Formula_Macro Macro
+'
+
+    Range("H:H,J:J,M:M,DA:DA").Select
+    Range("Worksheet_1[[#Headers],[Last Payment]]").Activate
+    Selection.NumberFormat = "mm/dd/yyyy"
+    
+' Text to Formula conversion
+    Range( _
+        "CO:CZ,DD:DO" _
+        ).Select
+    Selection.Replace What:="=", Replacement:="=", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False, FormulaVersion:=xlReplaceFormula2
+ '     remove duplicates
+        Columns("A:EI").Select
+        ActiveSheet.Range("Worksheet_1[#All]").RemoveDuplicates Columns:=1, Header _
+        :=xlYes
+        
+        
+'Copying the formula as value
+    Range("CO2:CZ2").Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone
+    Range("DD2:DO2").Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone
+    Range("EG2").Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Selection.Copy
+    Range("J2").Select
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone
+    Columns("EG:EG").Select
+    Selection.Delete Shift:=xlToLeft
+    
+
+    
+End Sub
+Sub Macro2_change2num_date()
+'
+' Macro2_change2num Macro
+'
+
+'
+    Range("CR:CT,CX:CZ,DG:DI").Select
+    Range("Worksheet_1[[#Headers],[3rd Publish POC Window]]").Activate
+    Selection.NumberFormat = "0"
+' date format Change
+    Range("H:H,J:J,M:M,DA:DA").Select
+    Range("Worksheet_1[[#Headers],[Last Payment]]").Activate
+    Selection.NumberFormat = "yyyy/mm/dd;@"
+End Sub
+
+    
+   
+'Sub Macro3_Call_down_start_date_custom()
+'
+'Dim i As Long
+'With ActiveSheet.ListObjects(1)
+'    For i = 1 To .DataBodyRange.Rows.Count
+'        If .ListColumns("Activation Status").DataBodyRange(i).Value = "No" And _
+'            .ListColumns("Call Down Start Date").DataBodyRange(i).Value = "" Then
+'            .ListColumns("Call Down Start Date_CUSTOM").DataBodyRange(i).Value = .ListColumns("Date Added").DataBodyRange(i).Value + 3
+'
+'        ElseIf .ListColumns("Activation Status").DataBodyRange(i).Value = "Yes" And _
+'            .ListColumns("Publish Date").DataBodyRange(i).Value = "" And _
+'            .ListColumns("Time to 1st Publish POC Status").DataBodyRange(i).Value = "No First POC" Then
+'            .ListColumns("Call Down Start Date_CUSTOM").DataBodyRange(i).Value = .ListColumns("Activation Date").DataBodyRange(i).Value
+'        Else
+'           .ListColumns("Call Down Start Date_CUSTOM").DataBodyRange(i).Value = .ListColumns("Call Down Start Date").DataBodyRange(i).Value
+'        End If
+'    Next i
+'
+'End With
+'
+'End Sub
+
+Sub Macro3_Call_down_start_date_custom()
+'
+Dim i As Integer
+Set lc = ActiveSheet.ListObjects(1).ListColumns
+Set range1 = lc("Activation Status").DataBodyRange
+Set range2 = lc("Call Down Start Date").DataBodyRange
+Set range3 = lc("Call Down Start Date_CUSTOM").DataBodyRange
+Set range4 = lc("Date Added").DataBodyRange
+Set range5 = lc("Publish Date").DataBodyRange
+Set range6 = lc("Time to 1st Publish POC Status").DataBodyRange
+Set range7 = lc("Activation Date").DataBodyRange
+
+
+On Error GoTo CATCH
+Application.ScreenUpdating = False
+
+With ActiveSheet.ListObjects(1)
+For i = 1 To .DataBodyRange.Rows.Count
+  If range1(i).Value = "No" And _
+    range2(i).Value = "" Then
+    range3(i).Value = range4(i).Value + 3
+    
+  ElseIf range1(i).Value = "Yes" And _
+    range5(i).Value = "" And _
+    range6(i).Value = "No First POC" Then
+    range3(i).Value = range7(i).Value
+  
+  Else
+    range3(i).Value = range2(i).Value
+  End If
+Next i
+End With
+
+CATCH: Application.ScreenUpdating = True
+End Sub
+
+
