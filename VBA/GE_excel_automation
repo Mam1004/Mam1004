@@ -1,12 +1,17 @@
 Sub Macro1_Change2Formula()
-'
+
 ' Formula_Macro Macro
 '
 
     Range("H:H,J:J,M:M,DA:DA").Select
     Range("Worksheet_1[[#Headers],[Last Payment]]").Activate
     Selection.NumberFormat = "mm/dd/yyyy"
-    
+    '
+    Range("EG").EntireColumn.Hidden = False
+    Range("EG2").Select
+    Selection.AutoFill Destination:=Range("Worksheet_1[Call Down Start Date_CUSTOM]")
+
+
 ' Text to Formula conversion
     Range( _
         "CO:CZ,DD:DO" _
@@ -18,9 +23,9 @@ Sub Macro1_Change2Formula()
         Columns("A:EI").Select
         ActiveSheet.Range("Worksheet_1[#All]").RemoveDuplicates Columns:=1, Header _
         :=xlYes
-        
-        
-'Copying the formula as value
+
+
+'Copying the formula as value for CW based text/Formula
     Range("CO2:CZ2").Select
     Range(Selection, Selection.End(xlDown)).Select
     Selection.Copy
@@ -29,13 +34,24 @@ Sub Macro1_Change2Formula()
     Range(Selection, Selection.End(xlDown)).Select
     Selection.Copy
     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone
+    Application.CutCopyMode = False
+
+
+    
+'autofill/copy& paste  all -1 from call_down dates_custom to column J for optimization
     Range("EG2").Select
     Range(Selection, Selection.End(xlDown)).Select
     Selection.Copy
     Range("J2").Select
     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone
-    Columns("EG:EG").Select
-    Selection.Delete Shift:=xlToLeft
+    
+    Range("EG3").Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone
+    Application.CutCopyMode = False
+    
+    Range("EG:EG").EntireColumn.Hidden = True
     
 
     
@@ -114,5 +130,8 @@ End With
 
 CATCH: Application.ScreenUpdating = True
 End Sub
+
+
+
 
 
